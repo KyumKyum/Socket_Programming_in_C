@@ -10,6 +10,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <errno.h>
 
 #define BUF_LEN 1024
 #define IP "127.0.0.1" //Loop back
@@ -27,7 +28,7 @@ int main(int argc, char* argv[]){
 	int bytes_recv; //Number of bytes to receive
 
 	//Create Socket
-	if(my_fd = socket(AF_INET,SOCK_STREAM,0) < 0){
+	if((my_fd = socket(AF_INET,SOCK_STREAM,0)) < 0){
 		printf("CLIENT: Failed to open socket\n");
 		return -1;
 	}
@@ -35,16 +36,17 @@ int main(int argc, char* argv[]){
 	//Create Server Socket Address
 	memset(&serv_addr,0x00,sizeof(serv_addr));
 	serv_addr.sin_family = AF_INET;
-	if(inet_pton(AF_INET,IP,&serv_addr.sin_addr) != 1){
-		printf("[CLIENT]: inde_pton ERROR!\n");
-		return -1;
-	}
-	//serv_addr.sin_addr.s_addr = inet_addr(IP);
+	//if(inet_pton(AF_INET,IP,&serv_addr.sin_addr) != 1){
+	//	printf("[CLIENT]: inde_pton ERROR!\n");
+	//	return -1;
+	//}
+	serv_addr.sin_addr.s_addr = inet_addr(IP);
 	serv_addr.sin_port = htons(PORT);
 
 	//Connect
 	if(connect(my_fd,(struct sockaddr*)&serv_addr,sizeof(serv_addr)) < 0){
 		printf("CLIENT: Failed to connect to server\n");
+		printf("%d\n",errno);
 		return -1;
 	}
 

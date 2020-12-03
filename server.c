@@ -38,7 +38,7 @@ int main(int argc, char* argv[]){
 	//Binding
 	memset(&server_addr,0x00,sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	server_addr.sin_port = htons(PORT);
 
 	if(bind(serv_fd,(struct sockaddr*)&server_addr,sizeof(server_addr)) < 0){
