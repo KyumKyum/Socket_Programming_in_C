@@ -31,7 +31,7 @@ int main(int argc, char* argv[]){
 	//Create Socket
 
 	if((my_fd = socket(AF_INET,SOCK_STREAM,0)) < 0){
-		printf("[CLIENT] Failed to open socket\n");
+		printf("[CLIENT] Failed to open socket. ERRORCODE: %d\n",errno);
 		return -1;
 	}
 
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
 	memset(&serv_addr,0x00,sizeof(serv_addr));
 	serv_addr.sin_family = AF_INET;
 	if(inet_pton(AF_INET,IP,&serv_addr.sin_addr) != 1){
-		printf("[CLIENT]: inde_pton ERROR!\n");
+		printf("[CLIENT]: inde_pton error. ERRORCODE: %d\n",errno);
 		return -1;
 	}
 	//serv_addr.sin_addr.s_addr = inet_addr(IP);
@@ -49,16 +49,16 @@ int main(int argc, char* argv[]){
 
 	//Connect
 	if(connect(my_fd,(struct sockaddr*)&serv_addr,sizeof(serv_addr)) < 0){
-		printf("CLIENT: Failed to connect to server\n");
-		printf("%d\n",errno);
+		printf("[CLIENT] Failed to connect to server. ERRORCODE: %d\n",errno);
 		return -1;
 	}
 
 	//Send and receive data
-	//fgets(send_buffer,BUF_LEN,stdin);
-	strcpy(send_buffer,"Message from Client");
+	printf("Enter Message to send: ");
+	fgets(send_buffer,BUF_LEN,stdin);
+	//strcpy(send_buffer,"Message from Client");
 	if(send(my_fd,send_buffer,strlen(send_buffer),0) < 0){//Sending
-		printf("CLIENT: Send Error\n");
+		printf("[CLIENT] Sending Error. ERRORCODE: %d\n",errno);
 		return -1;
 	}
 
@@ -70,6 +70,7 @@ int main(int argc, char* argv[]){
 	//	printf("[CLIENT]: Read Error ERRORCODE: %d\n",errno);
 	//	return -1;
 	//}
+
 	printf("[CLIENT] Received From Server: ");
 	fputs(recv_buffer,stdout);
 	printf("\n");
