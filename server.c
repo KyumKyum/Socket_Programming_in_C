@@ -20,8 +20,8 @@ int main(int argc, char* argv[]){
 	struct sockaddr_in server_addr;
 	struct sockaddr_in client_addr;
 
-	char read_buffer[BUF_LEN];
-	char send_buffer[BUF_LEN];
+	char read_buffer[BUF_LEN] = {'\0'};
+	char send_buffer[BUF_LEN] = {'\0'};
 	char* ptr;
 
 	int serv_fd;
@@ -78,6 +78,7 @@ int main(int argc, char* argv[]){
 				return -1;
 			}
 
+			memset(read_buffer,'\0',sizeof(read_buffer));
 			bytes_recv = BUF_LEN;
 			recv(cli_fd,read_buffer,bytes_recv,0);
 			read_buffer[bytes_recv] = 0;
