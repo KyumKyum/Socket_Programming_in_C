@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
 	struct sockaddr_in client_addr;
 
 	char read_buffer[BUF_LEN];
-	char send_buffer[BUF_LEN] = "RETURN_MESSAGE_FROM_SERVER";
+	char send_buffer[BUF_LEN];
 	char* ptr;
 
 	int serv_fd;
@@ -86,7 +86,12 @@ int main(int argc, char* argv[]){
 			printf("\n");
 			//buffer = "Reply from the server";
 
-			send(cli_fd,send_buffer,sizeof(send_buffer),0);
+			strcpy(send_buffer,"Return Message from Server");
+			if(send(cli_fd,send_buffer,sizeof(send_buffer),0) < 0){
+				printf("[SERVER]: Send Error ERRORCODE: %d\n",errno);
+				return -1;
+			}
+
 			printf("[SERVER]: End of the request, closing the client server\n");
 			if((close(cli_fd)) < 0){
 				printf("[SERVER]: Close Cient Socket Failed ERRORCODE: %d\n", errno);
