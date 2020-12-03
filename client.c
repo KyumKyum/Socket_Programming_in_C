@@ -36,11 +36,11 @@ int main(int argc, char* argv[]){
 	//Create Server Socket Address
 	memset(&serv_addr,0x00,sizeof(serv_addr));
 	serv_addr.sin_family = AF_INET;
-	//if(inet_pton(AF_INET,IP,&serv_addr.sin_addr) != 1){
-	//	printf("[CLIENT]: inde_pton ERROR!\n");
-	//	return -1;
-	//}
-	serv_addr.sin_addr.s_addr = inet_addr(IP);
+	if(inet_pton(AF_INET,IP,&serv_addr.sin_addr) != 1){
+		printf("[CLIENT]: inde_pton ERROR!\n");
+		return -1;
+	}
+	//serv_addr.sin_addr.s_addr = inet_addr(IP);
 	serv_addr.sin_port = htons(PORT);
 
 	//Connect
@@ -51,22 +51,21 @@ int main(int argc, char* argv[]){
 	}
 
 	//Send and receive data
+	printf("Enter data to send: ");
 	fgets(send_buffer,BUF_LEN,stdin);
 	if(send(my_fd,send_buffer,strlen(send_buffer),0) < 0){//Sending
 		printf("CLIENT: Send Error\n");
 		return -1;
 	}
-	bytes_recv = strlen(send_buffer);
-	ptr = recv_buffer;
 
-	while((n = recv(my_fd,ptr,bytes_recv,0)) > 0){ //Receiving
-		ptr = ptr + n;
-		bytes_recv = bytes_recv - n;
-	}
+	bytes_recv = BUF_LEN;
+	
+	recv(my_fd,recv_buffer,bytes_recv,0); //Receiving
 
 	recv_buffer[bytes_recv] = 0;
 	printf("[CLIENT] Received From Server: ");
 	fputs(recv_buffer,stdout);
+	printf("\n");
 
 	//Close and exit;
 	close(my_fd);

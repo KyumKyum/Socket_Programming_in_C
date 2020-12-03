@@ -10,6 +10,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <errno.h>
 
 #define PORT 5000
 #define BUF_LEN 1024
@@ -19,7 +20,8 @@ int main(int argc, char* argv[]){
 	struct sockaddr_in server_addr;
 	struct sockaddr_in client_addr;
 
-	char buffer[BUF_LEN];
+	char read_buffer[BUF_LEN];
+	char send_buffer[BUF_LEN] = "RETURN_MESSAGE_FROM_SERVER";
 	char* ptr;
 
 	int serv_fd;
@@ -27,6 +29,7 @@ int main(int argc, char* argv[]){
 	int cli_addr_len;
 	int child_pid;
 	int n;
+	int ret;
 	int bytes_recv;
 
 	//Socket Initialization
@@ -63,30 +66,35 @@ int main(int argc, char* argv[]){
 			return -1;
 		}
 
-		printf("[SERVER]: Connection request from client received, accepted.\n");
-
 		//MultiProcessing
 		child_pid = fork();//fork a child
+		
 		if(child_pid == 0){//Child process
+			
+			printf("[SERVER]: Request from the client accepted, allocating new child process.\n");
+
 			if((close(serv_fd)) < 0 ){
 				printf("[SERVER]: Close Socket Failed\n");
 				return -1;
 			}
-			ptr = buffer;
+
 			bytes_recv = BUF_LEN;
-			while((n = recv(cli_fd,ptr,bytes_recv,0)) > 0){
-				ptr = ptr + n;
-				bytes_recv = bytes_recv - n;
+			recv(cli_fd,read_buffer,bytes_recv,0);
+			read_buffer[bytes_recv] = 0;
+			printf("[SERVER]: Received from client: ");
+			fputs(read_buffer,stdout);
+			printf("\n");
+			//buffer = "Reply from the server";
+
+			send(cli_fd,send_buffer,sizeof(send_buffer),0);
+			printf("[SERVER]: End of the request, closing the client server\n");
+			if((close(cli_fd)) < 0){
+				printf("[SERVER]: Close Cient Socket Failed ERRORCODE: %d\n", errno);
+				return -1;
 			}
-			send(cli_fd,buffer,BUF_LEN,0);
 			exit(0);
 		}else if(child_pid < 0){
 			printf("[SERVER]: Fork Failed\n");
-			return -1;
-		}
-		printf("[SERVER]: End of the request, closing the client server.\n");
-		if((close(cli_fd)) < 0 ){
-			printf("[SERVER]: Close Client Socket Failed\n");
 			return -1;
 		}
 	}
