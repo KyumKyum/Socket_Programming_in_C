@@ -17,23 +17,23 @@
 
 int main(int argc, char* argv[]){
 	//Declaration
-	struct sockaddr_in server_addr;
-	struct sockaddr_in client_addr;
+	struct sockaddr_in server_addr; //server socket address
+	struct sockaddr_in client_addr; //client socket address
 
-	char read_buffer[BUF_LEN] = {'\0'};
-	char send_buffer[BUF_LEN] = {'\0'};
-	char* ptr;
+	char read_buffer[BUF_LEN] = {'\0'}; //read buffer
+	char send_buffer[BUF_LEN] = {'\0'}; //send buffer
+	char* ptr; //pointer
 
-	int serv_fd;
-	int cli_fd;
-	int cli_addr_len;
-	int child_pid;
+	int serv_fd; //server socket
+	int cli_fd; //client socket
+	int cli_addr_len; //client address length
+	int child_pid; //child pid
 	int n;
 	int ret;
 	int bytes_recv;
 
 	//Socket Initialization
-	if((serv_fd = socket(AF_INET,SOCK_STREAM,0)) < 0 ){
+	if((serv_fd = socket(AF_INET,SOCK_STREAM,0)) < 0 ){ //opening server socket
 		printf("[SERVER]: Socket Failed to Open. ERRORCODE: %d\n",errno);
 		return -1;
 	}
@@ -80,25 +80,25 @@ int main(int argc, char* argv[]){
 
 			memset(read_buffer,'\0',sizeof(read_buffer));
 			bytes_recv = BUF_LEN;
-			recv(cli_fd,read_buffer,bytes_recv,0);
-			read_buffer[bytes_recv] = 0;
+			recv(cli_fd,read_buffer,bytes_recv,0); //Receive message from client
+			read_buffer[bytes_recv] = 0; 
 			printf("[SERVER - MESSAGE RECRIVED]: Received from client: ");
-			fputs(read_buffer,stdout);
+			fputs(read_buffer,stdout); //Read message
 			//printf("\n")
 			//buffer = "Reply from the server";
 
 			strcpy(send_buffer,"Return Message from Server");
-			if(send(cli_fd,send_buffer,sizeof(send_buffer),0) < 0){
+			if(send(cli_fd,send_buffer,sizeof(send_buffer),0) < 0){ //Send message to client
 				printf("[SERVER]: Sending Error. ERRORCODE: %d\n",errno);
 				return -1;
 			}
 
 			printf("[SERVER]: End of the request, closing the client server\n");
-			if((close(cli_fd)) < 0){
+			if((close(cli_fd)) < 0){ //Closing socket
 				printf("[SERVER]: Close Cient Socket Failed. ERRORCODE: %d\n", errno);
 				return -1;
 			}
-			exit(0);
+			exit(0); //End the child process
 		}else if(child_pid < 0){
 			printf("[SERVER]: Fork Failed. ERRORCODE: %d\n",errno);
 			return -1;

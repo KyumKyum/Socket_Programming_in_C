@@ -66,11 +66,6 @@ int main(int argc, char* argv[]){
 	recv(my_fd,recv_buffer,bytes_recv,0); //Receiving
 	recv_buffer[bytes_recv] = 0;
 	
-	//if(read(my_fd,recv_buffer,sizeof(recv_buffer)-1) < 0){
-	//	printf("[CLIENT]: Read Error ERRORCODE: %d\n",errno);
-	//	return -1;
-	//}
-
 	printf("[CLIENT] Received From Server: ");
 	fputs(recv_buffer,stdout);
 	printf("\n");
